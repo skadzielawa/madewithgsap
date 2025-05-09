@@ -13,6 +13,8 @@ import { __ } from "@wordpress/i18n";
  */
 import { useBlockProps } from "@wordpress/block-editor";
 
+import { Placeholder, Spinner } from "@wordpress/components";
+import { pin } from "@wordpress/icons";
 /**
  * Lets webpack process CSS, SASS or SCSS files referenced in JavaScript files.
  * Those files can contain any CSS code that gets applied to the editor.
@@ -20,6 +22,18 @@ import { useBlockProps } from "@wordpress/block-editor";
  * @see https://www.npmjs.com/package/@wordpress/scripts#using-css
  */
 import "./editor.scss";
+
+import { useSelect } from "@wordpress/data";
+import { store as coreStore } from "@wordpress/core-data";
+
+function getFeaturedImageDetails(post, size) {
+	const image = post._embedded?.["wp:featuredmedia"]?.["0"];
+
+	return {
+		url: image?.media_details?.sizes?.[size]?.source_url ?? image?.source_url,
+		alt: image?.alt_text,
+	};
+}
 
 /**
  * The edit function describes the structure of your block in the context of the
@@ -30,9 +44,53 @@ import "./editor.scss";
  * @return {Element} Element to render.
  */
 export default function Edit() {
+	const { latestPosts } = useSelect((select) => {
+		const { getEntityRecords } = select(coreStore);
+		return {
+			latestPosts: getEntityRecords("postType", "post", {
+				per_page: 12,
+				_embed: "wp:featuredmedia",
+			}),
+		};
+	}, []);
+
+	const hasPosts = !!latestPosts?.length;
+
+	if (!hasPosts) {
+		return (
+			<div {...useBlockProps()}>
+				<Placeholder
+					icon={pin}
+					label={__("Made with Gsap - Effect 000", "madewithgsap")}
+				>
+					{!Array.isArray(latestPosts) ? (
+						<Spinner />
+					) : (
+						__("No posts found.", "madewithgsap")
+					)}
+				</Placeholder>
+			</div>
+		);
+	}
+
 	return (
-		<p {...useBlockProps()}>
-			{__("Madewithgsap – hello from the editor!", "madewithgsap")}
-		</p>
+		<section {...useBlockProps()}>
+			<div className="mwg_effect000">
+				<div className="medias">
+					{latestPosts.map((post) => {
+						const { url: imageSourceUrl, alt: featuredImageAlt } =
+							getFeaturedImageDetails(post, "full");
+
+						return (
+							imageSourceUrl && (
+								<a href={post.link} className="media">
+									<img src={imageSourceUrl} alt={featuredImageAlt} />
+								</a>
+							)
+						);
+					})}
+				</div>
+			</div>
+		</section>
 	);
 }
