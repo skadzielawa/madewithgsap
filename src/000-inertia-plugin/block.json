@@ -1,11 +1,11 @@
 {
 	"$schema": "https://schemas.wp.org/trunk/block.json",
 	"apiVersion": 3,
-	"name": "create-block/madewithgsap",
+	"name": "madewithgsap/effect-000",
 	"version": "0.1.0",
-	"title": "Madewithgsap",
+	"title": "Madewithgsap - Effect 000",
 	"category": "widgets",
-	"description": "Example block scaffolded with Create Block tool.",
+	"description": "A simple block, listing recent posts and using Effect 000 from the madewithgsap.com website.",
 	"example": {},
 	"supports": {
 		"html": false
