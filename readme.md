@@ -1,13 +1,11 @@
 # Madewithgsap
 
-**Contributors:** Szymon Kądzielawa
-**Tags:** block
-**Tested up to:** 6.7
-**Stable tag:** 0.1.0
-**License:** GPL-2.0-or-later
-**License URI:** [https://www.gnu.org/licenses/gpl-2.0.html](https://www.gnu.org/licenses/gpl-2.0.html)
-
-This is a simple Gutenberg block, listing recent posts.
+- **Author:** Szymon Kądzielawa
+- **Tags:** block
+- **Tested up to:** 6.7
+- **Stable tag:** 0.1.0
+- **License:** GPL-2.0-or-later
+- **License URI:** [https://www.gnu.org/licenses/gpl-2.0.html](https://www.gnu.org/licenses/gpl-2.0.html)
 
 ## Description
 
