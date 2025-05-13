@@ -123,7 +123,12 @@ export default function Edit({ attributes, setAttributes }) {
 
 							return (
 								imageSourceUrl && (
-									<a href={post.link} className="media">
+									<a
+										href={post.link}
+										className="media"
+										aria-label={post.title.rendered}
+										title={post.title.rendered}
+									>
 										<img src={imageSourceUrl} alt={featuredImageAlt} />
 									</a>
 								)
