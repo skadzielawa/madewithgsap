@@ -11,10 +11,15 @@ import { __ } from "@wordpress/i18n";
  *
  * @see https://developer.wordpress.org/block-editor/reference-guides/packages/packages-block-editor/#useblockprops
  */
-import { useBlockProps } from "@wordpress/block-editor";
+import { useBlockProps, InspectorControls } from "@wordpress/block-editor";
 
-import { Placeholder, Spinner } from "@wordpress/components";
-import { pin } from "@wordpress/icons";
+import {
+	Placeholder,
+	Spinner,
+	RangeControl,
+	PanelBody,
+} from "@wordpress/components";
+
 /**
  * Lets webpack process CSS, SASS or SCSS files referenced in JavaScript files.
  * Those files can contain any CSS code that gets applied to the editor.
@@ -25,6 +30,8 @@ import "./editor.scss";
 
 import { useSelect } from "@wordpress/data";
 import { store as coreStore } from "@wordpress/core-data";
+
+import metadata from "./block.json";
 
 function getFeaturedImageDetails(post, size) {
 	const image = post._embedded?.["wp:featuredmedia"]?.["0"];
@@ -43,26 +50,28 @@ function getFeaturedImageDetails(post, size) {
  *
  * @return {Element} Element to render.
  */
-export default function Edit() {
-	const { latestPosts } = useSelect((select) => {
-		const { getEntityRecords } = select(coreStore);
-		return {
-			latestPosts: getEntityRecords("postType", "post", {
-				per_page: 12,
-				_embed: "wp:featuredmedia",
-			}),
-		};
-	}, []);
+export default function Edit({ attributes, setAttributes }) {
+	const { maxPosts } = attributes;
+
+	const { latestPosts } = useSelect(
+		(select) => {
+			const { getEntityRecords } = select(coreStore);
+			return {
+				latestPosts: getEntityRecords("postType", "post", {
+					per_page: maxPosts,
+					_embed: "wp:featuredmedia",
+				}),
+			};
+		},
+		[maxPosts],
+	);
 
 	const hasPosts = !!latestPosts?.length;
 
 	if (!hasPosts) {
 		return (
 			<div {...useBlockProps()}>
-				<Placeholder
-					icon={pin}
-					label={__("Made with Gsap - Effect 000", "madewithgsap")}
-				>
+				<Placeholder label={__("Made with Gsap - Effect 000", "madewithgsap")}>
 					{!Array.isArray(latestPosts) ? (
 						<Spinner />
 					) : (
@@ -74,23 +83,39 @@ export default function Edit() {
 	}
 
 	return (
-		<section {...useBlockProps()}>
-			<div className="mwg_effect000">
-				<div className="medias">
-					{latestPosts.map((post) => {
-						const { url: imageSourceUrl, alt: featuredImageAlt } =
-							getFeaturedImageDetails(post, "full");
+		<>
+			<InspectorControls>
+				<PanelBody title={__("Top Curve", metadata.textdomain)}>
+					<RangeControl
+						__nextHasNoMarginBottom
+						__next40pxDefaultSize
+						label="Columns"
+						value={maxPosts}
+						onChange={(value) => setAttributes({ maxPosts: value })}
+						min={2}
+						max={100}
+					/>
+				</PanelBody>
+			</InspectorControls>
 
-						return (
-							imageSourceUrl && (
-								<a href={post.link} className="media">
-									<img src={imageSourceUrl} alt={featuredImageAlt} />
-								</a>
-							)
-						);
-					})}
+			<section {...useBlockProps()}>
+				<div className="mwg_effect000">
+					<div className="medias">
+						{latestPosts.map((post) => {
+							const { url: imageSourceUrl, alt: featuredImageAlt } =
+								getFeaturedImageDetails(post, "full");
+
+							return (
+								imageSourceUrl && (
+									<a href={post.link} className="media">
+										<img src={imageSourceUrl} alt={featuredImageAlt} />
+									</a>
+								)
+							);
+						})}
+					</div>
 				</div>
-			</div>
-		</section>
+			</section>
+		</>
 	);
 }

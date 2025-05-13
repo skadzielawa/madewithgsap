@@ -10,6 +10,12 @@
 	"supports": {
 		"html": false
 	},
+	"attributes": {
+		"maxPosts" : {
+			"type": "integer",
+			"default": 12
+		}
+	},
 	"textdomain": "madewithgsap",
 	"editorScript": "file:./index.js",
 	"editorStyle": "file:./index.css",
