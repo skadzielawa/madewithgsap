@@ -1,7 +1,7 @@
 <?php
 /**
  * Plugin Name:       Madewithgsap
- * Description:       Example block scaffolded with Create Block tool.
+ * Description:       This is a simple WP Gutenberg block, listing recent posts and using Effect 000 from the madewithgsap.com website.
  * Version:           0.1.0
  * Requires at least: 6.7
  * Requires PHP:      7.4
