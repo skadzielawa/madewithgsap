@@ -16,8 +16,9 @@ import { useBlockProps, InspectorControls } from "@wordpress/block-editor";
 import {
 	Placeholder,
 	Spinner,
-	RangeControl,
 	PanelBody,
+	QueryControls,
+	RangeControl,
 } from "@wordpress/components";
 
 /**
@@ -50,27 +51,55 @@ function getFeaturedImageDetails(post, size) {
  *
  * @return {Element} Element to render.
  */
+
+function Controls({ attributes, setAttributes }) {
+	const { maxPosts, order, orderBy } = attributes;
+
+	return (
+		<>
+			<PanelBody title={__("Options", metadata.textdomain)}>
+				<QueryControls
+					{...{ order, orderBy }}
+					numberOfItems={maxPosts}
+					onOrderChange={(value) => setAttributes({ order: value })}
+					onOrderByChange={(value) => setAttributes({ orderBy: value })}
+					onNumberOfItemsChange={(value) => setAttributes({ maxPosts: value })}
+				/>
+			</PanelBody>
+		</>
+	);
+}
+
 export default function Edit({ attributes, setAttributes }) {
-	const { maxPosts } = attributes;
+	const { maxPosts, order, orderBy } = attributes;
 
 	const { latestPosts } = useSelect(
 		(select) => {
 			const { getEntityRecords } = select(coreStore);
 			return {
 				latestPosts: getEntityRecords("postType", "post", {
+					order,
+					orderby: orderBy,
 					per_page: maxPosts,
 					_embed: "wp:featuredmedia",
 				}),
 			};
 		},
-		[maxPosts],
+		[order, orderBy, maxPosts],
 	);
 
 	const hasPosts = !!latestPosts?.length;
 
+	const inspectorControls = (
+		<InspectorControls>
+			<Controls attributes={attributes} setAttributes={setAttributes} />
+		</InspectorControls>
+	);
+
 	if (!hasPosts) {
 		return (
 			<div {...useBlockProps()}>
+				{inspectorControls}
 				<Placeholder label={__("Made with Gsap - Effect 000", "madewithgsap")}>
 					{!Array.isArray(latestPosts) ? (
 						<Spinner />
@@ -84,20 +113,7 @@ export default function Edit({ attributes, setAttributes }) {
 
 	return (
 		<>
-			<InspectorControls>
-				<PanelBody title={__("Top Curve", metadata.textdomain)}>
-					<RangeControl
-						__nextHasNoMarginBottom
-						__next40pxDefaultSize
-						label="Columns"
-						value={maxPosts}
-						onChange={(value) => setAttributes({ maxPosts: value })}
-						min={2}
-						max={100}
-					/>
-				</PanelBody>
-			</InspectorControls>
-
+			{inspectorControls}
 			<section {...useBlockProps()}>
 				<div className="mwg_effect000">
 					<div className="medias">

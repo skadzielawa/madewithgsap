@@ -11,9 +11,17 @@
 		"html": false
 	},
 	"attributes": {
-		"maxPosts" : {
+		"maxPosts": {
 			"type": "integer",
 			"default": 12
+		},
+		"order": {
+			"type": "string",
+			"default": "desc"
+		},
+		"orderBy": {
+			"type": "string",
+			"default": "date"
 		}
 	},
 	"textdomain": "madewithgsap",

@@ -12,39 +12,42 @@
 	<div class="mwg_effect000">
 		<div class="medias">
 			<?php
-			if ( ! empty( $attributes['maxPosts'] ) ) {
-				$num_of_posts = $attributes['maxPosts'];
-			} else {
-				$num_of_posts = 12;
-			}
-
-			$latest_posts = get_posts(
-				array(
-					'post_type'      => 'post',
-					'posts_per_page' => $num_of_posts = $attributes['maxPosts'],
-				)
+			$args = array(
+				'posts_per_page'      => $attributes['maxPosts'],
+				'post_status'         => 'publish',
+				'order'               => $attributes['order'],
+				'orderby'             => $attributes['orderBy'],
+				'ignore_sticky_posts' => true,
+				'no_found_rows'       => true,
 			);
-			?>
-			<?php foreach ( $latest_posts as $latest_post ) : ?>
-				<?php $latest_post_id = $latest_post->ID; ?>
-				<a href="<?php echo esc_url( get_the_permalink( $latest_post_id ) ); ?>"
-					class="media" aria-label="<?php echo esc_attr( get_the_title( $latest_post_id ) ); ?>">
-					<?php
-					if ( has_post_thumbnail( $latest_post_id ) ) {
-						$attachment_id = get_post_thumbnail_id( $latest_post_id );
-						echo wp_get_attachment_image(
-							$attachment_id,
-							'medium',
-							false,
-							array(
-								'class' => 'media-image',
-								'alt'   => '',
-							)
-						);
-					}
+
+			$latest_posts = new WP_Query( $args );
+
+			if ( $latest_posts->have_posts() ) {
+				while ( $latest_posts->have_posts() ) {
+					$latest_posts->the_post();
 					?>
-				</a>
-			<?php endforeach; ?>
+					<a href="<?php echo esc_url( get_the_permalink() ); ?>"
+						class="media" aria-label="<?php echo esc_attr( get_the_title() ); ?>">
+						<?php
+						if ( has_post_thumbnail() ) {
+							$attachment_id = get_post_thumbnail_id();
+							echo wp_get_attachment_image(
+								$attachment_id,
+								'medium',
+								false,
+								array(
+									'class' => 'media-image',
+									'alt'   => '',
+								)
+							);
+						}
+						?>
+					</a>
+					<?php
+				}
+			}
+			?>
 		</div>
 	</div>
 </div>
